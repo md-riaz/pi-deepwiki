@@ -1,0 +1,8 @@
+{
+  "name": "pi-deepwiki",
+  "version": "1.0.0",
+  "description": "DeepWiki extension for pi coding agent",
+  "main": "index.ts",
+  "author": "Antigravity",
+  "license": "MIT"
+}
