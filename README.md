@@ -47,21 +47,42 @@ Use deepwiki to ask facebook/react: "How does the reconciler schedule updates?"
 
 ## Installation
 
-Clone this repository or copy `index.ts` into your Pi extension directory.
+Install directly from GitHub with Pi:
 
 ```bash
-git clone https://github.com/md-riaz/pi-deepwiki.git
-mkdir -p ~/.pi/agent/extensions/deepwiki
-cp pi-deepwiki/index.ts ~/.pi/agent/extensions/deepwiki/index.ts
+pi install github:md-riaz/pi-deepwiki
 ```
 
 Then restart Pi so it reloads extensions.
 
-If you prefer a single-file install:
+### Update
 
 ```bash
-cp pi-deepwiki/index.ts ~/.pi/agent/extensions/deepwiki.ts
+pi install github:md-riaz/pi-deepwiki
 ```
+
+Restart Pi after updating.
+
+### Manual single-file install
+
+If you do not want to use `pi install`, copy `index.ts` into Pi's extension directory:
+
+```bash
+mkdir -p ~/.pi/agent/extensions
+curl -L https://raw.githubusercontent.com/md-riaz/pi-deepwiki/main/index.ts -o ~/.pi/agent/extensions/deepwiki.ts
+```
+
+Then restart Pi.
+
+### Manual git checkout
+
+```bash
+git clone https://github.com/md-riaz/pi-deepwiki.git ~/.pi/agent/git/github.com/md-riaz/pi-deepwiki
+mkdir -p ~/.pi/agent/extensions
+cp ~/.pi/agent/git/github.com/md-riaz/pi-deepwiki/index.ts ~/.pi/agent/extensions/deepwiki.ts
+```
+
+Then restart Pi.
 
 ## Notes
 
