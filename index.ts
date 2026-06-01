@@ -7,7 +7,7 @@
  * Queries GitHub repository documentation via DeepWiki's MCP API.
  */
 
-import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { keyHint } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 import { Type } from "@sinclair/typebox";
@@ -40,12 +40,35 @@ async function callMCP(method: string, args: Record<string, unknown>, signal?: A
 		throw new Error(`DeepWiki API returned ${response.status}: ${errorText}`);
 	}
 
-	const data: any = await response.json();
+	const contentType = response.headers.get("content-type") || "";
+	const body = await response.text();
+	const data: any = contentType.includes("text/event-stream")
+		? parseEventStreamJson(body)
+		: JSON.parse(body);
 	if (data.error) {
 		throw new Error(`DeepWiki API error: ${data.error.message}`);
 	}
 
 	return data.result;
+}
+
+function parseEventStreamJson(body: string): any {
+	let lastEvent: any;
+	for (const event of body.split(/\r?\n\r?\n/)) {
+		const dataLines = event
+			.split(/\r?\n/)
+			.filter((line) => line.startsWith("data:"))
+			.map((line) => line.slice(5).trimStart());
+		if (!dataLines.length) continue;
+		const data = dataLines.join("\n").trim();
+		if (!data || data === "[DONE]") continue;
+		if (data.startsWith("{")) return JSON.parse(data);
+		lastEvent = data;
+	}
+	if (lastEvent !== undefined) {
+		throw new Error(`DeepWiki API returned non-JSON event data: ${String(lastEvent).slice(0, 120)}`);
+	}
+	throw new Error("DeepWiki API returned empty event stream");
 }
 
 export default function deepwikiExtension(pi: ExtensionAPI) {
